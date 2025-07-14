@@ -196,3 +196,18 @@ function highlightFakulte(fakulteID, zoom = true, personel = null) {
     }
   }
 }
+let currentBase = "OSM Standart";
+const btn = document.getElementById("haritaDegistirBtn");
+btn.addEventListener("click", function() {
+  if (currentBase === "OSM Standart") {
+    map.removeLayer(baseLayers["OSM Standart"]);
+    map.addLayer(baseLayers["Fiziki Harita"]);
+    currentBase = "Fiziki Harita";
+    btn.textContent = "Harita: Fiziki";
+  } else {
+    map.removeLayer(baseLayers["Fiziki Harita"]);
+    map.addLayer(baseLayers["OSM Standart"]);
+    currentBase = "OSM Standart";
+    btn.textContent = "Harita: OSM";
+  }
+});
