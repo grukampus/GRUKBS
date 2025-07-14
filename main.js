@@ -8,7 +8,7 @@ const map = L.map("map", {
       [40.9075, 38.3125],  // daha güney ve batı (500 m dışarı)
       [40.9225, 38.3305]   // daha kuzey ve doğu (500 m dışarı)
   ],
-  maxBoundsViscosity: 0.5 // ister biraz yumuşat, 1.0 çok serttir
+  maxBoundsViscosity: 0.3 // ister biraz yumuşat, 1.0 çok serttir
 });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -175,7 +175,7 @@ function highlightFakulte(fakulteID, zoom = true, personel = null) {
     highlightLayer = L.geoJSON(fakulte, {
       style: { color: "#ff5722", fillColor: "#ffd180", weight: 5, fillOpacity: 0.7 }
     }).addTo(map);
-    if (zoom) map.fitBounds(highlightLayer.getBounds());
+    if (zoom) map.fitBounds(highlightLayer.getBounds(), {padding: [100, 100]});
     if (personel) {
       const bounds = highlightLayer.getBounds();
       L.popup()
