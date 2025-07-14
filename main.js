@@ -151,9 +151,10 @@ function triggerPersonelDropdown(fakulteID, bolumID) {
   const personelDropdown = document.getElementById("personelSec");
   personelDropdown.innerHTML = "<option value=''>Personel Seç</option>";
   personelDropdown.disabled = false;
-  personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID).forEach(p => {
-    personelDropdown.add(new Option(p.AD_SOYAD, p.PERSONEL_ID));
-  });
+personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID).forEach(p => {
+  let ad = (p.UNVAN ? p.UNVAN + ' ' : '') + p.AD_SOYAD;
+  personelDropdown.add(new Option(ad, p.PERSONEL_ID));
+});
   personelDropdown.addEventListener("change", e => {
     const secilenID = e.target.value;
     const personel = personeller.find(p => p.PERSONEL_ID === secilenID);
