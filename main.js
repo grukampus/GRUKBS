@@ -21,8 +21,8 @@ const map = L.map("map", {
   minZoom: 16,
   maxZoom: 22,
   maxBounds: [
-      [40.9075, 38.3125],  // daha güney ve batı (500 m dışarı)
-      [40.9225, 38.3305]   // daha kuzey ve doğu (500 m dışarı)
+      [40.9075, 38.3125],
+      [40.9225, 38.3305]
   ],
   maxBoundsViscosity: 0.3,
   layers: [baseLayers["OSM Standart"]]
@@ -84,14 +84,13 @@ layersConfig.forEach(layer => {
     }
     leafletLayer.addTo(map);
     overlayLayers[layer.name] = leafletLayer;
-    // --- GÜNCEL: BURADA baseLayers da ekliyoruz!
     if (Object.keys(overlayLayers).length === layersConfig.length) {
       L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
     }
   });
 });
 
-// 4. FAKÜLTE-BÖLÜM-PERSONEL DROPDOWN VE VURGULAMA
+// 5. FAKÜLTE-BÖLÜM-PERSONEL DROPDOWN VE VURGULAMA
 let fakulteGeoJSON, bolumler, personeller;
 let highlightLayer;
 
@@ -104,7 +103,6 @@ fetch("data/FAKULTE.json")
     initializeFakulteDropdown();
   });
 
-// Dropdownlar için diğer jsonları yükle
 fetch("data/bolumler.json").then(res => res.json()).then(data => bolumler = data);
 fetch("data/personel.json").then(res => res.json()).then(data => personeller = data);
 
@@ -137,43 +135,60 @@ function initializeFakulteDropdown() {
     fakulteDropdown.add(new Option(f.properties.FAKULTE_ADI, f.properties.FAKULTE_ID));
   });
   fakulteDropdown.disabled = false;
-  fakulteDropdown.addEventListener("change", e => {
+
+  // Event temizleme - klon yöntemiyle!
+  const newFakulteDropdown = fakulteDropdown.cloneNode(true);
+  fakulteDropdown.parentNode.replaceChild(newFakulteDropdown, fakulteDropdown);
+
+  newFakulteDropdown.addEventListener("change", e => {
     triggerBolumDropdown(e.target.value);
     highlightFakulte(e.target.value);
   });
 }
 
-// Bölüm dropdownunu doldur
+// Bölüm dropdownunu doldur (EVENT KARIŞMASIN!)
 function triggerBolumDropdown(fakulteID) {
   const bolumDropdown = document.getElementById("bolumSec");
   bolumDropdown.innerHTML = "<option value=''>Bölüm Seç</option>";
   document.getElementById("personelSec").innerHTML = "<option value=''>Personel Seç</option>";
   bolumDropdown.disabled = false;
   document.getElementById("personelSec").disabled = true;
+
+  // Tüm eski eventleri temizle!
+  const newBolumDropdown = bolumDropdown.cloneNode(true);
+  bolumDropdown.parentNode.replaceChild(newBolumDropdown, bolumDropdown);
+
   bolumler.filter(b => b.FAKULTE_ID === fakulteID).forEach(b => {
-    bolumDropdown.add(new Option(b.BOLUM_ADI, b.BOLUM_ID));
+    newBolumDropdown.add(new Option(b.BOLUM_ADI, b.BOLUM_ID));
   });
-  bolumDropdown.addEventListener("change", e => {
+
+  newBolumDropdown.addEventListener("change", e => {
     triggerPersonelDropdown(fakulteID, e.target.value);
-  }, { once: true });
+  });
 }
 
-// Personel dropdownunu doldur
+// Personel dropdownunu doldur (EVENT KARIŞMASIN!)
 function triggerPersonelDropdown(fakulteID, bolumID) {
   const personelDropdown = document.getElementById("personelSec");
   personelDropdown.innerHTML = "<option value=''>Personel Seç</option>";
   personelDropdown.disabled = false;
-personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID).forEach(p => {
-  let ad = (p.UNVAN ? p.UNVAN + ' ' : '') + p.AD_SOYAD;
-  personelDropdown.add(new Option(ad, p.PERSONEL_ID));
-});
-  personelDropdown.addEventListener("change", e => {
+
+  // Tüm eski eventleri temizle!
+  const newPersonelDropdown = personelDropdown.cloneNode(true);
+  personelDropdown.parentNode.replaceChild(newPersonelDropdown, personelDropdown);
+
+  personeller.filter(p => p.FAKULTE_ID === fakulteID && p.BOLUM_ID === bolumID).forEach(p => {
+    let ad = (p.UNVAN ? p.UNVAN + ' ' : '') + p.AD_SOYAD;
+    newPersonelDropdown.add(new Option(ad, p.PERSONEL_ID));
+  });
+
+  newPersonelDropdown.addEventListener("change", e => {
     const secilenID = e.target.value;
     const personel = personeller.find(p => p.PERSONEL_ID === secilenID);
     if (personel) {
       highlightFakulte(fakulteID, true, personel);
     }
-  }, { once: true });
+  });
 }
 
 // Seçili fakülteyi vurgula ve odağı oraya al
@@ -196,6 +211,8 @@ function highlightFakulte(fakulteID, zoom = true, personel = null) {
     }
   }
 }
+
+// Sol altta harita değiştirme butonu
 let currentBase = "OSM Standart";
 const btn = document.getElementById("haritaDegistirBtn");
 btn.addEventListener("click", function() {
