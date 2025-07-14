@@ -19,6 +19,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // 2. Katman tanımları (fakülte hariç hepsi)
 const layersConfig = [
+  { name: "Kapı / Giriş",     url: "data/KAPI_GİRİS.json",                   color: "#d84315", type: "point" },
   { name: "Kütüphane",        url: "data/KÜTÜPHANE_FeaturesToJSON.json",     color: "#673ab7" },
   { name: "Laboratuvar",      url: "data/LABORATUVARR_FeaturesToJSON.json",  color: "#e91e63" },
   { name: "Laboratuvar-2",    url: "data/LABORATUVARR_FeaturesToJSON1.json", color: "#f44336" },
@@ -29,7 +30,6 @@ const layersConfig = [
   { name: "Yemekhane",        url: "data/YEMEKHANEE_FeaturesToJSON.json",    color: "#ff9800" },
   { name: "Yeşil Alan",       url: "data/YESİLALAN_FeaturesToJSON.json",     color: "#8bc34a" },
   { name: "Yol Ağı",          url: "data/YOL_AGI.json",                      color: "#212121", type: "line" },
-  { name: "Kapı / Giriş",     url: "data/KAPI_GİRİS.json",                   color: "#d84315", type: "point" },
   { name: "Bankamatik",       url: "data/BANKAMATİK_FeaturesToJSON.json",    color: "#00796b" },
   { name: "Güvenlik",         url: "data/GÜVENLİK_FeaturesToJSON.json",      color: "#000000" }
 ];
