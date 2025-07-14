@@ -5,11 +5,12 @@ const map = L.map("map", {
   minZoom: 16,
   maxZoom: 22,
   maxBounds: [
-    [40.912, 38.317],
-    [40.918, 38.326]
+      [40.9075, 38.3125],  // daha güney ve batı (500 m dışarı)
+      [40.9225, 38.3305]   // daha kuzey ve doğu (500 m dışarı)
   ],
-  maxBoundsViscosity: 1.0
+  maxBoundsViscosity: 0.5 // ister biraz yumuşat, 1.0 çok serttir
 });
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap',
   noWrap: true,
