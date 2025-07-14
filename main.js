@@ -1,4 +1,20 @@
-// 1. Harita kurulumu
+// 1. Harita altlık katmanları (Base Layers)
+const baseLayers = {
+  "OSM Standart": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    noWrap: true,
+    maxZoom: 22,
+    minZoom: 16
+  }),
+  "Fiziki Harita": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenTopoMap (CC-BY-SA)',
+    noWrap: true,
+    maxZoom: 18,
+    minZoom: 16
+  })
+};
+
+// 2. Harita kurulumu (baseLayer ile)
 const map = L.map("map", {
   center: [40.915, 38.321],
   zoom: 17,
@@ -8,17 +24,11 @@ const map = L.map("map", {
       [40.9075, 38.3125],  // daha güney ve batı (500 m dışarı)
       [40.9225, 38.3305]   // daha kuzey ve doğu (500 m dışarı)
   ],
-  maxBoundsViscosity: 0.3 // ister biraz yumuşat, 1.0 çok serttir
+  maxBoundsViscosity: 0.3,
+  layers: [baseLayers["OSM Standart"]]
 });
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap',
-  noWrap: true,
-  maxZoom: 22,
-  minZoom: 16
-}).addTo(map);
-
-// 2. Katman tanımları (fakülte hariç hepsi)
+// 3. Katman tanımları (fakülte hariç hepsi)
 const layersConfig = [
   { name: "Kapı / Giriş",     url: "data/KAPI_GİRİS.json",                   color: "#d84315", type: "point" },
   { name: "Kütüphane",        url: "data/KÜTÜPHANE_FeaturesToJSON.json",     color: "#673ab7" },
@@ -35,7 +45,7 @@ const layersConfig = [
   { name: "Güvenlik",         url: "data/GÜVENLİK_FeaturesToJSON.json",      color: "#000000" }
 ];
 
-// 3. Katmanları haritaya ekle
+// 4. Katmanları haritaya ekle
 let overlayLayers = {};
 layersConfig.forEach(layer => {
   fetch(layer.url).then(res => res.json()).then(data => {
@@ -74,8 +84,9 @@ layersConfig.forEach(layer => {
     }
     leafletLayer.addTo(map);
     overlayLayers[layer.name] = leafletLayer;
+    // --- GÜNCEL: BURADA baseLayers da ekliyoruz!
     if (Object.keys(overlayLayers).length === layersConfig.length) {
-      L.control.layers(null, overlayLayers, { collapsed: false }).addTo(map);
+      L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
     }
   });
 });
